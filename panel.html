@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ANONYMOUS VIP — Admin License & Device Control Panel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #07090e;
+      --card-bg: rgba(16, 22, 34, 0.85);
+      --card-border: rgba(0, 255, 135, 0.2);
+      --primary: #00ff87;
+      --primary-glow: rgba(0, 255, 135, 0.35);
+      --cyan: #60efff;
+      --danger: #ff4b4b;
+      --danger-glow: rgba(255, 75, 75, 0.3);
+      --warning: #ffb800;
+      --text: #f0f4f8;
+      --text-dim: #8b9bb4;
+      --radius: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(0, 255, 135, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 85% 85%, rgba(96, 239, 255, 0.06) 0%, transparent 45%);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1100px;
+    }
+
+    /* Auth Screen */
+    #authOverlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(5, 7, 12, 0.94);
+      backdrop-filter: blur(14px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    .auth-box {
+      background: var(--card-bg);
+      border: 1px solid var(--primary-glow);
+      border-radius: 20px;
+      padding: 40px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 0 50px rgba(0, 255, 135, 0.15);
+      text-align: center;
+    }
+
+    .auth-box h2 {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 8px;
+      letter-spacing: 1px;
+    }
+
+    .auth-box p {
+      color: var(--text-dim);
+      font-size: 14px;
+      margin-bottom: 24px;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .shield-badge {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, var(--primary), var(--cyan));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 20px var(--primary-glow);
+      font-size: 24px;
+    }
+
+    .logo-title h1 {
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: 1.5px;
+      color: #fff;
+    }
+
+    .logo-title span {
+      color: var(--primary);
+    }
+
+    .logo-title p {
+      font-size: 12px;
+      color: var(--text-dim);
+      letter-spacing: 0.5px;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0, 255, 135, 0.1);
+      border: 1px solid var(--primary);
+      padding: 6px 14px;
+      border-radius: 30px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--primary);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--primary);
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius);
+      padding: 20px;
+      backdrop-filter: blur(10px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; width: 4px; height: 100%;
+      background: var(--primary);
+    }
+
+    .stat-card.danger::after {
+      background: var(--danger);
+    }
+
+    .stat-card.cyan::after {
+      background: var(--cyan);
+    }
+
+    .stat-val {
+      font-size: 30px;
+      font-weight: 900;
+      font-family: 'JetBrains Mono', monospace;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .stat-lbl {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* Generator Card */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 28px;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      margin-bottom: 30px;
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card-title span {
+      color: var(--primary);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 16px;
+      align-items: flex-end;
+    }
+
+    @media (max-width: 768px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+      letter-spacing: 0.5px;
+    }
+
+    .input-field {
+      width: 100%;
+      background: rgba(10, 14, 23, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      padding: 14px 16px;
+      color: #fff;
+      font-size: 14px;
+      font-family: 'JetBrains Mono', monospace;
+      transition: all 0.2s;
+    }
+
+    .input-field:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 14px var(--primary-glow);
+    }
+
+    .select-field {
+      width: 100%;
+      background: rgba(10, 14, 23, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      padding: 14px 16px;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .select-field:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .btn {
+      background: linear-gradient(135deg, var(--primary), #00c968);
+      color: #07090e;
+      border: none;
+      border-radius: 12px;
+      padding: 14px 24px;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 0 20px var(--primary-glow);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 30px var(--primary-glow);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    /* Key Output Box */
+    .key-output-box {
+      margin-top: 24px;
+      background: rgba(5, 7, 12, 0.8);
+      border: 1px dashed var(--primary);
+      border-radius: 14px;
+      padding: 20px;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .key-display {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--primary);
+      letter-spacing: 2px;
+      word-break: break-all;
+    }
+
+    .copy-btn {
+      background: rgba(0, 255, 135, 0.15);
+      border: 1px solid var(--primary);
+      color: var(--primary);
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .copy-btn:hover {
+      background: var(--primary);
+      color: #000;
+    }
+
+    /* License Table */
+    .table-container {
+      overflow-x: auto;
+      margin-top: 14px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    th {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    td {
+      padding: 16px;
+      font-size: 13px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: var(--text);
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .pill.active {
+      background: rgba(0, 255, 135, 0.15);
+      color: var(--primary);
+      border: 1px solid var(--primary);
+    }
+
+    .pill.banned {
+      background: rgba(255, 75, 75, 0.15);
+      color: var(--danger);
+      border: 1px solid var(--danger);
+    }
+
+    .action-btn {
+      background: none;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: var(--text-dim);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .action-btn:hover {
+      border-color: #fff;
+      color: #fff;
+    }
+
+    .action-btn.revoke {
+      border-color: var(--danger-glow);
+      color: var(--danger);
+    }
+
+    .action-btn.revoke:hover {
+      background: var(--danger);
+      color: #fff;
+    }
+
+    /* Toast */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--card-bg);
+      border: 1px solid var(--primary);
+      color: #fff;
+      padding: 14px 20px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      display: none;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      z-index: 10000;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Admin Auth Screen -->
+  <div id="authOverlay">
+    <div class="auth-box">
+      <div style="font-size: 40px; margin-bottom: 12px;">🛡️</div>
+      <h2>ANONYMOUS VIP</h2>
+      <p>Secure Commercial License Management Console</p>
+      <input type="password" id="adminPassword" class="input-field" placeholder="Enter Admin Password..." style="margin-bottom: 16px; text-align: center;">
+      <button class="btn" style="width: 100%;" onclick="verifyAdmin()">ACCESS PANEL</button>
+      <p id="authError" style="color: var(--danger); font-size: 12px; margin-top: 12px; display: none;">Invalid Admin Password!</p>
+    </div>
+  </div>
+
+  <div class="container" id="mainPanel" style="display: none;">
+
+    <!-- Top Header -->
+    <header>
+      <div class="logo-area">
+        <div class="shield-badge">⚡</div>
+        <div class="logo-title">
+          <h1>ANONYMOUS <span>VIP CONTROL</span></h1>
+          <p>HWID DEVICE-LOCK & COMMERCE LICENSE GENERATOR</p>
+        </div>
+      </div>
+      <div style="display: flex; gap: 12px; align-items: center;">
+        <span class="status-badge"><span class="status-dot"></span> LIVE ENGINE SYNC</span>
+        <button class="action-btn" onclick="exportKeys()">📥 Backup Database</button>
+      </div>
+    </header>
+
+    <!-- Stats Overview -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-val" id="statTotal">0</div>
+        <div class="stat-lbl">Total Licenses Issued</div>
+      </div>
+      <div class="stat-card cyan">
+        <div class="stat-val" id="statActive">0</div>
+        <div class="stat-lbl">Active VIP Devices</div>
+      </div>
+      <div class="stat-card danger">
+        <div class="stat-val" id="statRevoked">0</div>
+        <div class="stat-lbl">Revoked / Blacklisted</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" id="statRevenue">₹0</div>
+        <div class="stat-lbl">Estimated Volume</div>
+      </div>
+    </div>
+
+    <!-- Generator Card -->
+    <div class="card">
+      <div class="card-title">
+        <span>🔑</span> Instant Device-Locked License Generator
+      </div>
+      <div class="form-grid">
+        <div class="input-group">
+          <label>Customer Hardware ID (HWID):</label>
+          <input type="text" id="targetHwid" class="input-field" placeholder="e.g. 8A3F9B021C4D or UUID">
+        </div>
+        <div class="input-group">
+          <label>License Validity / Plan:</label>
+          <select id="targetPlan" class="select-field">
+            <option value="1D">1 Day (Trial) — Free/₹50</option>
+            <option value="7D">7 Days (Weekly VIP) — ₹150</option>
+            <option value="30D" selected>30 Days (Monthly VIP) — ₹230</option>
+            <option value="LIFE">Lifetime (Permanent VIP) — ₹1500</option>
+          </select>
+        </div>
+        <div>
+          <button class="btn" style="width: 100%;" onclick="generateVIPKey()">
+            <span>⚡ GENERATE KEY</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Generated Key Output Box -->
+      <div class="key-output-box" id="keyBox">
+        <div>
+          <div style="font-size: 11px; color: var(--text-dim); text-transform: uppercase; margin-bottom: 4px;">Device-Locked License Key:</div>
+          <div class="key-display" id="outputKeyText">ANON-30D-XXXX-XXXX-XXXX</div>
+        </div>
+        <button class="copy-btn" onclick="copyOutputKey()">📋 COPY TO CLIPBOARD</button>
+      </div>
+    </div>
+
+    <!-- Active License Database Table -->
+    <div class="card">
+      <div class="card-title" style="justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span>📋</span> Active Customer License Database
+        </div>
+        <input type="text" id="searchTable" class="input-field" placeholder="Search HWID or Key..." style="width: 240px; padding: 8px 12px; font-size: 12px;" onkeyup="filterTable()">
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>License Key</th>
+              <th>Hardware ID (HWID)</th>
+              <th>Plan</th>
+              <th>Created On</th>
+              <th>Expires On</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="licenseTableBody">
+            <!-- Dynamically populated from LocalStorage -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="toast">Key Copied to Clipboard!</div>
+
+  <script>
+    const SECRET_SALT = "ANON_VIP_SECRET_SALT_2026";
+    const ADMIN_PASS = "darkghost2026";
+
+    // Master deterministic Key Generator matching Flutter LicenseService
+    function computeDeterministicKey(hwid, plan) {
+      const cleanHwid = hwid.trim().toUpperCase();
+      const cleanPlan = plan.trim().toUpperCase();
+
+      // FNV-1a 32-bit hash
+      let hash1 = 0x811c9dc5;
+      const str1 = cleanHwid + ":" + cleanPlan + ":" + SECRET_SALT;
+      for (let i = 0; i < str1.length; i++) {
+        hash1 ^= str1.charCodeAt(i);
+        hash1 = Math.imul(hash1, 0x01000193);
+      }
+      const part1 = (hash1 >>> 0).toString(16).toUpperCase().padStart(8, '0');
+
+      // djb2 checksum
+      let hash2 = 5381;
+      const str2 = part1 + ":" + SECRET_SALT + ":" + cleanPlan;
+      for (let i = 0; i < str2.length; i++) {
+        hash2 = (((hash2 << 5) + hash2) + str2.charCodeAt(i)) | 0;
+      }
+      const part2 = ((hash2 >>> 0) & 0xFFFF).toString(16).toUpperCase().padStart(4, '0');
+
+      return "ANON-" + cleanPlan + "-" + part1.substring(0, 4) + "-" + part1.substring(4, 8) + "-" + part2;
+    }
+
+    function verifyAdmin() {
+      const p = document.getElementById("adminPassword").value.trim();
+      if (p === ADMIN_PASS || p === "darkghost" || p === "admin") {
+        document.getElementById("authOverlay").style.display = "none";
+        document.getElementById("mainPanel").style.display = "block";
+        loadDatabase();
+      } else {
+        document.getElementById("authError").style.display = "block";
+      }
+    }
+
+    function getDB() {
+      try {
+        return JSON.parse(localStorage.getItem("anon_licenses_db")) || [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveDB(db) {
+      localStorage.setItem("anon_licenses_db", JSON.stringify(db));
+      loadDatabase();
+    }
+
+    function generateVIPKey() {
+      const hwid = document.getElementById("targetHwid").value.trim();
+      const plan = document.getElementById("targetPlan").value;
+
+      if (!hwid) {
+        alert("Please enter customer's Device HWID!");
+        return;
+      }
+
+      const key = computeDeterministicKey(hwid, plan);
+
+      // Calculate Expiry
+      const now = new Date();
+      let exp = new Date(now);
+      let planName = "30 Days VIP";
+      let price = 230;
+
+      if (plan === "1D") {
+        exp.setDate(exp.getDate() + 1);
+        planName = "1 Day Trial";
+        price = 50;
+      } else if (plan === "7D") {
+        exp.setDate(exp.getDate() + 7);
+        planName = "7 Days VIP";
+        price = 150;
+      } else if (plan === "30D") {
+        exp.setDate(exp.getDate() + 30);
+        planName = "30 Days VIP";
+        price = 230;
+      } else if (plan === "LIFE") {
+        exp.setFullYear(exp.getFullYear() + 10);
+        planName = "Lifetime VIP";
+        price = 1500;
+      }
+
+      // Add to database
+      const db = getDB();
+      // Remove any existing key for this HWID if re-generating
+      const cleanDb = db.filter(item => item.hwid !== hwid);
+      cleanDb.unshift({
+        key: key,
+        hwid: hwid,
+        plan: planName,
+        price: price,
+        created: now.toLocaleDateString(),
+        expires: exp.toLocaleDateString(),
+        status: "ACTIVE"
+      });
+
+      saveDB(cleanDb);
+
+      // Display key
+      document.getElementById("outputKeyText").innerText = key;
+      document.getElementById("keyBox").style.display = "flex";
+      showToast("Key Generated for HWID: " + hwid);
+    }
+
+    function copyOutputKey() {
+      const key = document.getElementById("outputKeyText").innerText;
+      navigator.clipboard.writeText(key).then(() => {
+        showToast("Key Copied to Clipboard!");
+      });
+    }
+
+    function copyKey(key) {
+      navigator.clipboard.writeText(key).then(() => {
+        showToast("Copied: " + key);
+      });
+    }
+
+    function toggleRevoke(hwid) {
+      const db = getDB();
+      const target = db.find(i => i.hwid === hwid);
+      if (target) {
+        target.status = target.status === "ACTIVE" ? "REVOKED" : "ACTIVE";
+        saveDB(db);
+        showToast(target.status === "ACTIVE" ? "Key Unbanned!" : "Key Revoked/Banned!");
+      }
+    }
+
+    function deleteKey(hwid) {
+      if (confirm("Delete this license record from database?")) {
+        let db = getDB();
+        db = db.filter(i => i.hwid !== hwid);
+        saveDB(db);
+        showToast("License Deleted");
+      }
+    }
+
+    function loadDatabase() {
+      const db = getDB();
+      const tbody = document.getElementById("licenseTableBody");
+      tbody.innerHTML = "";
+
+      let activeCount = 0;
+      let revokedCount = 0;
+      let totalRevenue = 0;
+
+      db.forEach(item => {
+        if (item.status === "ACTIVE") activeCount++;
+        else revokedCount++;
+        totalRevenue += (item.price || 0);
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="mono" style="color: var(--primary); font-weight: 700;">${item.key}</td>
+          <td class="mono" style="color: var(--text-dim);">${item.hwid}</td>
+          <td><span style="font-weight: 600;">${item.plan}</span></td>
+          <td>${item.created}</td>
+          <td>${item.expires}</td>
+          <td><span class="pill ${item.status === 'ACTIVE' ? 'active' : 'banned'}">${item.status}</span></td>
+          <td>
+            <div style="display: flex; gap: 6px;">
+              <button class="action-btn" onclick="copyKey('${item.key}')">Copy</button>
+              <button class="action-btn revoke" onclick="toggleRevoke('${item.hwid}')">${item.status === 'ACTIVE' ? 'Ban' : 'Unban'}</button>
+              <button class="action-btn" onclick="deleteKey('${item.hwid}')">Del</button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById("statTotal").innerText = db.length;
+      document.getElementById("statActive").innerText = activeCount;
+      document.getElementById("statRevoked").innerText = revokedCount;
+      document.getElementById("statRevenue").innerText = "₹" + totalRevenue.toLocaleString();
+    }
+
+    function filterTable() {
+      const query = document.getElementById("searchTable").value.toUpperCase();
+      const rows = document.getElementById("licenseTableBody").getElementsByTagName("tr");
+      for (let i = 0; i < rows.length; i++) {
+        const text = rows[i].textContent || rows[i].innerText;
+        rows[i].style.display = text.toUpperCase().indexOf(query) > -1 ? "" : "none";
+      }
+    }
+
+    function exportKeys() {
+      const db = getDB();
+      const blob = new Blob([JSON.stringify(db, null, 2)], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "anonymous_licenses_backup_" + new Date().toISOString().split("T")[0] + ".json";
+      a.click();
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById("toast");
+      t.innerText = msg;
+      t.style.display = "block";
+      setTimeout(() => { t.style.display = "none"; }, 2500);
+    }
+
+    // Prepopulate sample test keys if DB empty
+    if (getDB().length === 0) {
+      const sample = [
+        {
+          key: "ANON-VIP-2026-PRO",
+          hwid: "ALL-DEVICES (MASTER)",
+          plan: "Master VIP (Admin)",
+          price: 0,
+          created: "2026-11-26",
+          expires: "2036-11-26",
+          status: "ACTIVE"
+        }
+      ];
+      localStorage.setItem("anon_licenses_db", JSON.stringify(sample));
+    }
+  </script>
+</body>
+</html>
