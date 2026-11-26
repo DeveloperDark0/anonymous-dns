@@ -208,6 +208,54 @@
             letter-spacing: 0.8px;
         }
 
+        /* Server Dropdown Selection */
+        .ios-install-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .server-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            margin-top: 4px;
+        }
+
+        .btn-server {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(14, 21, 37, 0.95);
+            border: 1px solid rgba(0, 255, 135, 0.35);
+            border-radius: 14px;
+            color: #FFFFFF;
+            text-decoration: none;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .btn-server:hover, .btn-server:active {
+            background: rgba(0, 255, 135, 0.15);
+            border-color: var(--primary-neon);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 255, 135, 0.3);
+        }
+
+        .btn-server-2 {
+            border-color: rgba(96, 239, 255, 0.35);
+        }
+
+        .btn-server-2:hover, .btn-server-2:active {
+            background: rgba(96, 239, 255, 0.15);
+            border-color: var(--secondary-neon);
+            box-shadow: 0 6px 20px rgba(96, 239, 255, 0.3);
+        }
+
         .btn-secondary {
             display: flex;
             flex-direction: column;
@@ -401,15 +449,37 @@
         <!-- Download Buttons -->
         <div class="download-group">
 
-            <!-- 1-Click iOS OTA Button -->
-            <a href="itms-services://?action=download-manifest&url=https://developerdark0.github.io/anonymous-dns/manifest.plist" 
-               class="btn-install-ios" 
-               id="iosOtaBtn">
-                <div class="btn-title">
-                    <span>🍏</span> <span>Install on iPhone (1-Click)</span>
+            <!-- 1-Click iOS OTA Button with Server Selection -->
+            <div class="ios-install-container" id="iosContainer">
+                <button class="btn-install-ios" id="iosOtaBtn" type="button" style="cursor: pointer; border: none; outline: none;">
+                    <div class="btn-title">
+                        <span>🍏</span> <span>Install on iPhone (1-Click)</span> <span id="toggleArrow" style="font-size: 13px; margin-left: 6px;">▼</span>
+                    </div>
+                    <div class="btn-subtext">Tap to Select Server &bull; No PC Needed</div>
+                </button>
+                <div class="server-options" id="serverOptions" style="display: none;">
+                    <a href="https://i.diawi.com/9RmhVb" class="btn-server" target="_blank" rel="noopener">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <span style="font-size: 20px;">⚡</span>
+                            <div style="text-align: left;">
+                                <div style="font-size: 14px; font-weight: 800; color: #00FF87;">Server 1 (Recommended)</div>
+                                <div style="font-size: 11px; color: #94A3B8;">Primary Direct OTA Installation</div>
+                            </div>
+                        </div>
+                        <span style="font-size: 15px; color: #00FF87; font-weight: 800;">INSTALL &rarr;</span>
+                    </a>
+                    <a href="https://ioair.link/cjndwy" class="btn-server btn-server-2" target="_blank" rel="noopener">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <span style="font-size: 20px;">🛡️</span>
+                            <div style="text-align: left;">
+                                <div style="font-size: 14px; font-weight: 800; color: #60EFFF;">Server 2 (Backup Mirror)</div>
+                                <div style="font-size: 11px; color: #94A3B8;">Alternative OTA Installation</div>
+                            </div>
+                        </div>
+                        <span style="font-size: 15px; color: #60EFFF; font-weight: 800;">INSTALL &rarr;</span>
+                    </a>
                 </div>
-                <div class="btn-subtext">Direct Safari OTA &bull; No PC Needed</div>
-            </a>
+            </div>
 
             <!-- Android APK Direct Download -->
             <a href="ANONYMOUS.apk" 
@@ -444,7 +514,7 @@
                 <div class="step-item">
                     <div class="step-num">1</div>
                     <div class="step-content">
-                        Tap the green <strong>"Install on iPhone"</strong> button above in Safari. When the system prompt appears, tap <strong>Install</strong>.
+                        Tap <strong>"Install on iPhone"</strong> above and select <strong>Server 1</strong> or <strong>Server 2</strong>. Tap <strong>Install</strong> on the prompt.
                     </div>
                 </div>
                 <div class="step-item">
@@ -461,20 +531,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- VIP Telegram Community Link -->
-        <a href="https://t.me" class="telegram-box" target="_blank" rel="noopener">
-            <div class="tg-left">
-                <div class="tg-icon">
-                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.52 2.77-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/></svg>
-                </div>
-                <div class="tg-text">
-                    <h4>Official VIP Community</h4>
-                    <p>Instant Activation Keys & Game Updates</p>
-                </div>
-            </div>
-            <div class="tg-arrow">&rarr;</div>
-        </a>
 
         <!-- Footer -->
         <footer>
@@ -494,9 +550,23 @@
             const iosBtn = document.getElementById('iosOtaBtn');
             const androidBtn = document.getElementById('androidApkBtn');
 
+            const iosContainer = document.getElementById('iosContainer');
+            const serverOptions = document.getElementById('serverOptions');
+            const toggleArrow = document.getElementById('toggleArrow');
+
+            iosBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const isHidden = serverOptions.style.display === 'none' || !serverOptions.style.display;
+                serverOptions.style.display = isHidden ? 'flex' : 'none';
+                toggleArrow.innerHTML = isHidden ? '▲' : '▼';
+            });
+
             if (isIOS) {
                 notice.innerHTML = "🍏 <span>Apple iPhone / iPad Detected</span>";
-                iosBtn.style.order = "-1";
+                iosContainer.style.order = "-1";
+                // Auto-open server options on iOS device for convenience
+                serverOptions.style.display = "flex";
+                toggleArrow.innerHTML = "▲";
             } else if (isAndroid) {
                 notice.innerHTML = "🤖 <span>Android Device Detected</span>";
                 androidBtn.style.order = "-1";
